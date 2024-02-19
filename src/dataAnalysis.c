@@ -1,8 +1,14 @@
+/**
+For the time being both GSL and non-GSL functions will be added for testing, optimization, and educational purposes.
+
+*/
 #include "dbg.h"
 #include "dataAnalysis.h"
 
 #include <stdio.h>
 #include <gsl/gsl_sf_bessel.h>
+#include <gsl/gsl_statistics_double.h>
+#include <gsl/gsl_rng.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_errno.h>
 
@@ -14,10 +20,12 @@
 #include <float.h>
 #include <limits.h>
 
-
 Samples2D set = {0};
-Samples2D clusters[K] = {0};
-Vector2 means[K]= {0};
+//Samples2D clusters[K] = {0};
+//Vector2 means[K]= {0};
+Node clusters[K]={0};
+Node means[K]={0};
+
 
 double math_test(double x){
 
@@ -33,6 +41,53 @@ inline float rand_float(void){
     return (float)rand()/RAND_MAX;
 }
 
+/*
+This function is just a distance calculating function and does not use gsl, just math library.
+*/
+double calculate_distance(Node a,  Node b){
+    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+}
+
+void assign_clusters(Node *data, int data_size, Node *centroids, int k, int *assignments){
+    for (int i = 0; i < data_size; i++){
+        double min_distance = calculate_distance(data[i], centroids[0]);
+        int cluster = 0;
+        for (int j = 1; j < k; j++){
+            double distance = calculate_distance(data[i], centroids[j]);
+            if (distance < min_distance){
+                min_distance = distance;
+                cluster = j;
+            }
+        }
+        assignments[i] = cluster;
+
+    }
+}
+
+void update_centroids(Node *data, int data_size, Node *centroids, int k, int *assignments){
+    // Reset Centroids
+    for (int i = 0; i < k; i++){
+        centroids[i].x = 0;
+        centroids[i].y = 0;
+    }
+
+    // Sum up all points assigned to each cluster
+    int counts[k];
+    for (int i = 0; i < k; i++) counts[i] = 0;
+    for (int i = 0; i < data_size; i++){
+        centroids[assignments[i]].x += data[i].x;
+        centroids[assignments[i]].y += data[i].y;
+        counts[assignments[i]]++;
+    }
+
+}
+
+/* 
+This version of  function calculates the distance and builds the samples cluster struct.
+It does not use GSL.
+This function is an alternative to using both the calculate_distance and assign_clusters function.
+*/
+/*
 void generate_cluster(Vector2 center, float radius, size_t count, Samples2D *samples){
     for (size_t i = 0; i < count; ++i){
             float angle = rand_float()*2*PI;
@@ -46,14 +101,12 @@ void generate_cluster(Vector2 center, float radius, size_t count, Samples2D *sam
                 .x = original.x,
                 .y = original.y,
                 .distance = Vector2Add(original, center),
-            };
-            
+            }; 
     }
 }
 
+
 //Remember that now Samples2D has extra data types.
-
-
 void generate_new_state(float min_x, float max_x, float min_y, float max_y){
     #ifndef STELLAR
     set.count = 0;
@@ -111,3 +164,4 @@ void update_means(float min_x, float max_x, float min_y, float max_y){
         }
     }
 }
+*/

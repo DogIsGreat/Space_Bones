@@ -44,8 +44,10 @@ typedef struct {
 } Samples2D;
 
 extern Samples2D set;
-extern Samples2D clusters[K];
-extern Vector2 means[K];
+//extern Samples2D clusters[K];
+//extern Vector2 means[K];
+
+
 
 typedef struct {
     double x;
@@ -53,21 +55,38 @@ typedef struct {
     Vector2 distance;
 } Sample;
 
+typedef struct Node {
+    double x;
+    double y;
+    struct Node* next;
+} Node;
+
 typedef struct {
     char* item;
     size_t count;
     size_t capacity;
 } String_Map;
 
+extern Node means[K];
+extern Node clusters[K];
+
 double math_test(double x);
 
 extern inline float rand_float(void);
 
+//New Functions
+double calculate_distance(Node a, Node b);
+
+void assign_clusters(Node *data, int data_size, Node *centroids, int k, int *assignments);
+
+void update_centroids(Node *data, int data_size, Node *centroids, int k, int *assignments);
+//End New Functions
+/*
 extern void generate_cluster(Vector2 center, float radius, size_t count, Samples2D *samples);
 
 void generate_new_state(float min_x, float max_x, float min_y, float max_y);
 
 extern void recluster_state(void);
-
+*/
 
 #endif

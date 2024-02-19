@@ -1,3 +1,8 @@
+/*
+Currently the program loads all data into memory and this may not be necessary.
+*/
+
+
 // Original Work
 #include "dataAnalysis.h"
 
@@ -23,11 +28,7 @@
 #define MAX_NODES 100000
 // #define RANDO
 
-typedef struct Node {
-    double x;
-    double y;
-    struct Node* next;
-} Node;
+
 
 typedef enum{
     STAR_ID,
@@ -152,11 +153,10 @@ int main()
                             break;
 
                     }
-                    log_value(" p.x:p.y: column:value %d:%d: %d:%d ",p[row -1].x, p[row -1].y, column,value);
                     value = strtok(NULL, ",");
-                    
-                    
                 }
+
+                log_value(" p.x:p.y: column:value %d:%d: %d:%d ",p[row -1].x, p[row -1].y, column,value);
                 column = 0;
                 row++;
             }
@@ -177,13 +177,24 @@ int main()
     const int screenWidth = 800;
     const int screenHeight = 450;
     int colors_count = (sizeof(colors) / sizeof(colors[0]));
+    int data_counter = 0;
     
     srand(time(0));
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "K-means data visualization of Observable Stellar Attributes");
 
-    generate_new_state(min_x, max_x, min_y, max_y);
-    recluster_state();
+    // Get amount of data in rows loaded into memory
+    while(p->next != NULL){
+        data_counter++;
+        p=p->next;
+    }
+
+    assign_clusters(p, data_counter, means ,K, clusters);
+    update_centroids(p, data_counter, means, K, clusters);
+
+    //Old way
+    //generate_new_state(min_x, max_x, min_y, max_y);
+    //recluster_state();
 
     Camera2D camera = { 0 };
     camera.zoom = 1.0f;
@@ -242,6 +253,8 @@ int main()
 
                     DrawCircleV(means[i], SAMPLE_RADIUS/camera.zoom, BLACK);
                 }
+
+
 
             EndMode2D(); 
 
