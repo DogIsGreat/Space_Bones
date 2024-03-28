@@ -244,6 +244,8 @@ int main()
 
     CloseWindow();
     log_info("Program successfully ending. ");
+    free(clusters);
+    free(means);
     free(p);
     fclose(spreadsheet);
     close_logging();
