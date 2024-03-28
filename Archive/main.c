@@ -100,8 +100,7 @@ int main()
     const char *filename = "data/star_classification.csv";
     spreadsheet = fopen(filename, "r");
     Vector2* p = (Vector2*)malloc(MAX_NODES * sizeof(Vector2));
-    Vector2* means = (Vector2*)malloc(K * sizeof(Vector2));
-    Vector2* clusters = (Vector2*)malloc(MAX_NODES * sizeof(Vector2));
+    Vector2* means = (Vector2*)malloc(K)
     int row = 1;
 
 
@@ -164,6 +163,7 @@ int main()
         }
     }
 
+
     log_info(" Visualization Pre-Stage. ");
     log_info("x = %f..%f", min_x, max_x);
     log_info("y = %f..%f", min_y, max_y);
@@ -177,10 +177,15 @@ int main()
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "K-means data visualization of Observable Stellar Attributes");
 
+    // Get amount of data in rows loaded into memory
     data_counter = row;
 
     assign_clusters(p, data_counter, means ,K, clusters);
     update_centroids(p, data_counter, means, K, clusters);
+
+    //Old way
+    //generate_new_state(min_x, max_x, min_y, max_y);
+    //recluster_state();
 
     Camera2D camera = { 0 };
     camera.zoom = 1.0f;
@@ -232,6 +237,12 @@ int main()
                 for (size_t i = 0; i < K; ++i){
                     Color color = colors[i%colors_count];
 
+/*
+                    for (size_t j = 0; j < clusters[i].count; ++j){
+                        Vector2 it = clusters[i].items[j];
+                        DrawCircleV(it, SAMPLE_RADIUS/camera.zoom, color);
+                    }
+*/
                     for (size_t j= 0; j < data_counter; ++j){
                         Vector2 it = {0};
                         it.x = p[i].x;
