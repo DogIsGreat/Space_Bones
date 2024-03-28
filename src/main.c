@@ -2,7 +2,6 @@
 Currently the program loads all data into memory and this may not be necessary.
 */
 
-
 // Original Work
 #include "dataAnalysis.h"
 
@@ -26,8 +25,6 @@ Currently the program loads all data into memory and this may not be necessary.
 
 #define MAX_NODES 100000
 // #define RANDO
-
-
 
 typedef enum{
     STAR_ID,
@@ -101,9 +98,8 @@ int main()
     spreadsheet = fopen(filename, "r");
     Vector2* p = (Vector2*)malloc(MAX_NODES * sizeof(Vector2));
     Vector2* means = (Vector2*)malloc(K * sizeof(Vector2));
-    Vector2* clusters = (Vector2*)malloc(MAX_NODES * sizeof(Vector2));
+    int* clusters = (int*)malloc(MAX_NODES * sizeof(int));
     int row = 1;
-
 
     if (!spreadsheet){
         log_err("Spreadsheet failed to open.");
@@ -113,7 +109,6 @@ int main()
         char buffer[1024];
         row = 1;
         int column = 0;
-
 
         while (fgets(buffer, 1024,spreadsheet) != NULL){
             if (row == 0) {
