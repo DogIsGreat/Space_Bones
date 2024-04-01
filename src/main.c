@@ -24,47 +24,6 @@ Currently the program loads all data into memory and this may not be necessary.
 #include <limits.h>
 
 #define MAX_NODES 100000
-// #define RANDO
-
-typedef enum{
-    STAR_ID,
-    STAR_ALPHA,
-    STAR_DELTA,
-    STAR_UV,
-    STAR_GFILTER,
-    STAR_RFILTER,
-    STAR_IRFILTER,
-    STAR_RUNID,
-    STAR_RERUNID,
-    STAR_CAMSCANLINE,
-    STAR_FIELDID,
-    STAR_SPECTROID,
-    STAR_CLASS,
-    STAR_REDSHIFT,
-    STAR_PLATE,
-    STAR_MJD,
-    STAR_FIBERID,
-} Stellar_attrib;
-
-static Stellar_attrib labels[] = {
-    STAR_ID,
-    STAR_ALPHA,
-    STAR_DELTA,
-    STAR_UV,
-    STAR_GFILTER,
-    STAR_RFILTER,
-    STAR_IRFILTER,
-    STAR_RUNID,
-    STAR_RERUNID,
-    STAR_CAMSCANLINE,
-    STAR_FIELDID,
-    STAR_SPECTROID,
-    STAR_CLASS,
-    STAR_REDSHIFT,
-    STAR_PLATE,
-    STAR_MJD,
-    STAR_FIBERID,
-};
 
 static Color colors[] = {
         CLITERAL(Color){255, 203, 0, 255},   // Gold
@@ -94,7 +53,7 @@ int main()
 
     //open data file
     FILE *spreadsheet;
-    const char *filename = "data/star_classification.csv";
+    const char *filename = "data/random2.csv";
     spreadsheet = fopen(filename, "r");
     Vector2* p = (Vector2*)malloc(MAX_NODES * sizeof(Vector2));
     Vector2* means = (Vector2*)malloc(K * sizeof(Vector2));
@@ -133,7 +92,6 @@ int main()
             while(value != NULL){
 
                 switch(column){
-                    //Enum values inside of Cases? STAR_ID , STAR_ALPHA
                     case 0:
                         p[row -1].x = atof(value);
                         column++;
@@ -167,6 +125,7 @@ int main()
     const int screenHeight = 450;
     int colors_count = (sizeof(colors) / sizeof(colors[0]));
     size_t data_counter = 0;
+    size_t data_place = 0;
 
     srand(time(0));
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -192,6 +151,7 @@ int main()
             delta = Vector2Scale(delta, -1.0f/camera.zoom);
 
             camera.target = Vector2Add(camera.target, delta);
+
         }
 
         // if button click space bar recalculate..
@@ -212,7 +172,7 @@ int main()
         }
 
         BeginDrawing();
-            ClearBackground(BLACK);
+            ClearBackground(WHITE);
 
             BeginMode2D(camera);
 
@@ -222,18 +182,23 @@ int main()
                     DrawGrid(100, 50);
                 rlPopMatrix();
 
-                DrawCircle(100, 100, 50, GREEN);
+                //DrawCircle(100, 100, 50, GREEN);
 
                 for (size_t i = 0; i < K; ++i){
                     Color color = colors[i%colors_count];
 
-                    for (size_t j= 0; j < data_counter; ++j){
+                // correct This for assignment number...
+                    for (size_t j= data_place; j < data_counter; ++j){
                         Vector2 it = {0};
-                        it.x = p[i].x;
-                        it.y = p[i].y;
+                        it.x = p[j].x;
+                        it.y = p[j].y;
                         DrawCircleV(it, SAMPLE_RADIUS/camera.zoom, color);
+                        if (clusters[j] != clusters[j+1]){
+                            data_place = j;
+                            break;
+                        }
                     }
-                    DrawCircleV(means[i], SAMPLE_RADIUS/camera.zoom, BLACK);
+                    DrawCircleV(means[i], 2*SAMPLE_RADIUS/camera.zoom, color);
                 }
 
             EndMode2D();
